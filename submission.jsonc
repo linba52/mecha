@@ -10,4 +10,5 @@
   // 是否部署
   "is_deployed": false,
   // 部署或发布链接，上一项如果是 false 此处就是 release 链接，否则就是 deploy 链接
-  "deploy_release_url": "https://github.com/linba52/mecha/releases#re
+  "deploy_release_url": "https://github.com/linba52/mecha/releases#release-v0.2.0"
+}
