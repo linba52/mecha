@@ -59,15 +59,9 @@ class DeepSeekLLM(BaseLLM):
         return response.choices[0].message.content or ""
 
     def build_initial_messages(self, task: str, context: str) -> list[dict]:
-        """Build the initial message list for a new task.
-
-        Args:
-            task: The user's task description.
-            context: Additional context (project files, memory, etc.).
-
-        Returns:
-            List of message dicts for the LLM.
-        """
+        """Build the initial message list for a new task."""
         user_message = f"## Task\n{task}\n\n## Context\n{context}"
         return [
-            {"role": "system", "content
+            {"role": "system", "content": SYSTEM_PROMPT},
+            {"role": "user", "content": user_message},
+        ]
