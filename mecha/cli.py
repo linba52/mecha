@@ -120,19 +120,56 @@ def _cmd_run(args) -> None:
     llm = DeepSeekLLM(config, api_key)
 
     # Run the loop
-    print(f"\n🤖 Mecha is working on: {args.task}\n")
+    print(f"\nMecha is working on: {args.task}\n")
     result = run_loop(args.task, llm, config, args.project_root)
 
     # Print result
     print(f"\n{'='*50}")
     if result["success"]:
-        print(f"✅ Task completed in {result['iterations']} iterations.")
-        print(f"   Summary: {result['summary']}")
+        print(f"Task completed in {result['iterations']} iterations.")
+        print(f"Summary: {result['summary']}")
     else:
-        print(f"❌ Task failed after {result['iterations']} iterations.")
-        print(f"   Reason: {result['summary']}")
+        print(f"Task failed after {result['iterations']} iterations.")
+        print(f"Reason: {result['summary']}")
     print(f"{'='*50}\n")
 
 
 def _cmd_repl(args) -> None:
-    """Interactive REPL
+    """Interactive REPL mode — accept multiple tasks in a session."""
+    config = Config.from_file(args.config)
+    api_key = get_key()
+    if api_key is None:
+        print("No API key configured. Run 'mecha --set-key' first.")
+        sys.exit(1)
+
+    llm = DeepSeekLLM(config, api_key)
+
+    print(f"\nMecha REPL — type a task or 'exit' to quit\n")
+    while True:
+        try:
+            task = input("mecha> ").strip()
+        except (EOFError, KeyboardInterrupt):
+            print("\nGoodbye.")
+            break
+
+        if not task:
+            continue
+        if task.lower() in ("exit", "quit"):
+            print("Goodbye.")
+            break
+
+        print(f"\nWorking on: {task}\n")
+        result = run_loop(task, llm, config, args.project_root)
+
+        print(f"{'='*50}")
+        if result["success"]:
+            print(f"Done in {result['iterations']} iterations.")
+            print(f"{result['summary']}")
+        else:
+            print(f"Failed after {result['iterations']} iterations.")
+            print(f"{result['summary']}")
+        print(f"{'='*50}\n")
+
+
+if __name__ == "__main__":
+    main()
