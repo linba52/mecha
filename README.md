@@ -8,6 +8,7 @@ Mecha 是一个 Coding Agent Harness——它把 LLM（DeepSeek）封装成一�
 
 **核心特性：**
 
+- **对话模式**：支持自然语言多轮对话，跨轮次记忆上下文，可同时聊天和编码
 - **三层护栏**：静态规则匹配 → 分级审批（低危放行/中危确认/高危拒绝）→ 审计日志
 - **反馈闭环**：自动运行 pytest，测试失败时解析错误并回灌给 LLM 自我修正
 - **安全凭据**：API Key 存储在操作系统钥匙串中，绝不写入明文文件
@@ -35,7 +36,10 @@ pip install -e .
 # 设置 API Key（首次运行前）
 mecha --set-key
 
-# 执行任务
+# 对话模式（推荐）：进入 REPL，支持多轮对话和编码
+mecha
+
+# 单次任务模式：一行命令完成一个任务
 mecha "在 src/utils.py 中创建一个日期格式化函数，并写测试"
 
 # 查看状态
@@ -146,18 +150,4 @@ mecha/
 
 ## 配置
 
-项目根目录 `.mecha.yaml`：
-
-```yaml
-llm_provider: deepseek
-llm_model: deepseek-chat
-llm_base_url: https://api.deepseek.com
-max_iterations: 20
-max_fix_rounds: 3
-custom_danger_rules: []
-custom_confirm_rules: []
-```
-
-## 许可证
-
-MIT
+项目根目�
