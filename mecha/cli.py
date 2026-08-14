@@ -108,6 +108,7 @@ def _cmd_run(args) -> None:
     else:
         print(f"Task failed after {result['iterations']} iterations.")
         print(f"Reason: {result['summary']}")
+    _print_usage(llm)
     print(f"{'='*50}\n")
 
 
@@ -119,6 +120,13 @@ def _cmd_repl(args) -> None:
         sys.exit(1)
     llm = DeepSeekLLM(config, api_key)
     run_conversation(llm, config, args.project_root)
+
+
+def _print_usage(llm: DeepSeekLLM) -> None:
+    """Print token usage summary."""
+    u = llm.last_usage
+    t = llm.total_tokens
+    print(f"Tokens: {u['total_tokens']} this call | {t} total (P:{llm.total_prompt_tokens} C:{llm.total_completion_tokens})")
 
 
 if __name__ == "__main__":

@@ -45,6 +45,11 @@ class DeepSeekLLM(BaseLLM):
             base_url=config.llm_base_url,
             timeout=config.llm_timeout,
         )
+        # Token usage tracking
+        self.total_prompt_tokens = 0
+        self.total_completion_tokens = 0
+        self.total_tokens = 0
+        self.last_usage = {"prompt_tokens": 0, "completion_tokens": 0, "total_tokens": 0}
 
     def chat(self, messages: list[dict]) -> str:
         """Send messages to DeepSeek and return the response text."""
@@ -53,6 +58,16 @@ class DeepSeekLLM(BaseLLM):
             messages=messages,
             max_tokens=4096,
         )
+        # Track token usage
+        if hasattr(response, "usage") and response.usage:
+            self.last_usage = {
+                "prompt_tokens": response.usage.prompt_tokens,
+                "completion_tokens": response.usage.completion_tokens,
+                "total_tokens": response.usage.total_tokens,
+            }
+            self.total_prompt_tokens += response.usage.prompt_tokens
+            self.total_completion_tokens += response.usage.completion_tokens
+            self.total_tokens += response.usage.total_tokens
         return response.choices[0].message.content or ""
 
     def build_initial_messages(self, task: str, context: str) -> list[dict]:
