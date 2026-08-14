@@ -64,11 +64,10 @@ def main() -> None:
         return
 
     # Main task execution
-    if not args.task:
-        parser.print_help()
-        sys.exit(1)
-
-    _cmd_run(args)
+    if args.task:
+        _cmd_run(args)
+    else:
+        _cmd_repl(args)
 
 
 def _cmd_status(args) -> None:
@@ -135,5 +134,5 @@ def _cmd_run(args) -> None:
     print(f"{'='*50}\n")
 
 
-if __name__ == "__main__":
-    main()
+def _cmd_repl(args) -> None:
+    """Interactive REPL
