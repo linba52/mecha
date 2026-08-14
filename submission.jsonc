@@ -6,9 +6,8 @@
   // 姓名
   "name": "李冠锦",
   // 仓库托管链接
-  "repo_url": "https://github.com/xxx/yyy",
+  "repo_url": "https://github.com/linba52/mecha",
   // 是否部署
   "is_deployed": false,
   // 部署或发布链接，上一项如果是 false 此处就是 release 链接，否则就是 deploy 链接
-  "deploy_release_url": "https://github.com/xxx/yyy/releases#release-zzz"
-}
+  "deploy_release_url": "https://github.com/linba52/mecha/releases#re
