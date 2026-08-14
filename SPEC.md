@@ -1,6 +1,6 @@
 # Mecha — SPEC.md
 
-> Coding Agent Harness | 单次任务执行型 | Python + DeepSeek + Docker
+> Coding Agent Harness | 对话模式 + 单次任务执行 | Python + DeepSeek + Docker
 
 ---
 
@@ -334,4 +334,4 @@ Coding 领域映射到四类机制：
 | Mock LLM 和真实 LLM 行为差异 | Mock 测试通过不代表真实场景正确 | 额外做真实 LLM 手动集成测试 |
 | Docker 内 keyring 不可用 | 凭据无法存储 | 检测并降级为加密文件存储（带主密码） |
 | DeepSeek API 不可用 | 整个 harness 无法运行 | 提供清晰的错误提示；支持通过配置切换 LLM 供应商 |
-| 任务超出 agent 能力 | 无限循环浪费 token | 最大迭代 20 轮硬限制 + 超时保护 |
+| 任务超出 agent 能力 | 无限循环浪费 token | 最大迭代 20 轮硬限制 + �
