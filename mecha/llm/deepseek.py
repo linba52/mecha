@@ -26,6 +26,7 @@ Respond ONLY with a JSON object in this exact format:
 }
 
 IMPORTANT RULES:
+- Use Chinese to communicate. All reasoning and summary fields must be in Chinese.
 - Use read_file to understand existing code before modifying it
 - Use write_file to create or modify files. Always write complete file content.
 - Use run_command for testing (pytest), linting, or git operations
@@ -69,6 +70,4 @@ class DeepSeekLLM(BaseLLM):
         """
         user_message = f"## Task\n{task}\n\n## Context\n{context}"
         return [
-            {"role": "system", "content": SYSTEM_PROMPT},
-            {"role": "user", "content": user_message},
-        ]
+            {"role": "system", "content
