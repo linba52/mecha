@@ -2,6 +2,7 @@
 
 import json
 import os
+import re
 from mecha.models import Action, ActionResult, MemoryEntry
 from mecha.config import Config
 from mecha.llm.base import BaseLLM
@@ -11,17 +12,36 @@ from mecha.feedback import get_feedback, is_test_command
 from mecha.memory import save_memory, search_memories, format_memories_for_context
 
 
+def _extract_json(text: str) -> str | None:
+    """Try to extract a JSON object from text that may have surrounding commentary."""
+    text = text.strip()
+    # Remove markdown code fences
+    text = re.sub(r'^```(?:json)?\s*\n', '', text)
+    text = re.sub(r'\n```\s*$', '', text)
+    # Try to find JSON object with balanced braces
+    start = text.find('{')
+    if start == -1:
+        return None
+    depth = 0
+    for i in range(start, len(text)):
+        if text[i] == '{':
+            depth += 1
+        elif text[i] == '}':
+            depth -= 1
+            if depth == 0:
+                return text[start:i+1]
+    return None
+
+
 def _parse_action(text: str) -> Action | None:
     """Parse LLM response text into an Action. Returns None if parsing fails."""
-    text = text.strip()
-    if text.startswith("```"):
-        lines = text.split("\n")
-        text = "\n".join(lines[1:]) if len(lines) > 1 else text
-        if text.endswith("```"):
-            text = text[:-3]
-
+    json_str = _extract_json(text)
+    if json_str is None:
+        return None
     try:
-        data = json.loads(text)
+        data = json.loads(json_str)
+        if "type" not in data:
+            return None
         return Action(
             type=data["type"],
             params=data.get("params", {}),
@@ -169,15 +189,11 @@ def run_loop(task: str, llm: BaseLLM, config: Config, project_root: str | None =
 
 
 def run_conversation(llm: BaseLLM, config: Config, project_root: str | None = None) -> None:
-    """Interactive conversation mode — maintains history across turns.
-
-    The LLM can respond with plain text (chat) or JSON actions (execute tools).
-    Conversation history is preserved across user inputs.
-    """
+    """Interactive conversation mode — maintains history across turns."""
     if project_root is None:
         project_root = os.getcwd()
 
-    sys_msg = llm.build_initial_messages("", "")[0] if hasattr(llm, "build_initial_messages") else {"role": "system", "content": "You are a helpful coding agent. Respond in Chinese. You can chat naturally or execute actions using JSON format."}
+    sys_msg = llm.build_initial_messages("", "")[0] if hasattr(llm, "build_initial_messages") else {"role": "system", "content": "You are a helpful coding agent. Respond in Chinese."}
     messages = [sys_msg]
 
     print("Mecha REPL — type a task or 'exit' to quit\n")
@@ -207,7 +223,7 @@ def run_conversation(llm: BaseLLM, config: Config, project_root: str | None = No
                 print(f"Error: {e}")
                 break
 
-            # Try to parse as action
+            # Try to parse as action (JSON anywhere in response)
             action = _parse_action(response)
             if action is None:
                 # Plain text response — display to user
